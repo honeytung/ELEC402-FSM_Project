@@ -11,7 +11,7 @@ logic insertCard;
 logic cardRemoved;
 logic cancelAction;
 logic correctPassword;
-logic optionSelect;
+logic [1:0] optionSelect;
 logic moneyInserted;
 logic amountEntered;
 logic enoughBalance;
@@ -27,8 +27,11 @@ ATM_FSM DUT(.*);
 //////////////////////////////////////////////////////////////////////////////////////////////
 //      Signal Initializations
 //////////////////////////////////////////////////////////////////////////////////////////////
-{clk, rst} = 2'b01;
-{insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 9'b000000000;
+
+initial begin
+    {clk, rst} = 2'b01;
+    {insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 10'b0000000000;
+end
 
 // Release rst after 20 unit delay
 initial begin
@@ -42,17 +45,16 @@ always begin
     clk = ~clk;
 end
 
-#5;
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 //      Test Cases
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-// Case 1: Insert card then cancel
-// State Transition: welcomeScreen -> enterPassword -> removeCard -> welcomeScreen
-// Expected state output: 0000 -> 0001 -> 0010 -> 0000
-initial begin
-    #50;
+always begin
+
+    // Case 1: Insert card then cancel
+    // State Transition: welcomeScreen -> enterPassword -> removeCard -> welcomeScreen
+    // Expected state output: 0000 -> 0001 -> 0010 -> 0000
+    #55;
     insertCard = 1;
     #20;
     insertCard = 0;
@@ -62,19 +64,16 @@ initial begin
     cardRemoved = 1;
     #20;
     cardRemoved = 0;
-end
 
-rst = 1;
-{insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 9'b000000000;
-initial begin
+    rst = 1;
+    {insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 10'b0000000000;
     #20;
     rst = 0;
-end
 
-// Case 2: Cancel in option screen
-// State Transition: welcomeScreen -> enterPassword -> optionScreen -> removeCard -> welcomeScreen
-// Expected state output: 0000 -> 0001 -> 0011 -> 0010 -> 0000
-initial begin
+    // Case 2: Cancel in option screen
+    // State Transition: welcomeScreen -> enterPassword -> optionScreen -> removeCard -> welcomeScreen
+    // Expected state output: 0000 -> 0001 -> 0011 -> 0010 -> 0000
+
     #50;
     insertCard = 1;
     #20;
@@ -88,19 +87,16 @@ initial begin
     cardRemoved = 1;
     #20;
     cardRemoved = 0;
-end
 
-rst = 1;
-{insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 9'b000000000;
-initial begin
+    rst = 1;
+    {insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 10'b0000000000;
     #20;
     rst = 0;
-end
 
-// Case 3: Deposit money
-// State Transition: welcomeScreen -> enterPassword -> optionScreen -> putMoney -> showBalance -> printReceipt -> optionScreen -> removeCard -> welcomeScreen
-// Expected state output: 0000 -> 0001 -> 0011 -> 0100 -> 0101 -> 1010 -> 0011 -> 0010 -> 0000
-initial begin
+    // Case 3: Deposit money
+    // State Transition: welcomeScreen -> enterPassword -> optionScreen -> putMoney -> showBalance -> printReceipt -> optionScreen -> removeCard -> welcomeScreen
+    // Expected state output: 0000 -> 0001 -> 0011 -> 0100 -> 0101 -> 1010 -> 0011 -> 0010 -> 0000
+
     #50;
     insertCard = 1;
     #20;
@@ -122,19 +118,16 @@ initial begin
     cardRemoved = 1;
     #20;
     cardRemoved = 0;
-end
 
-rst = 1;
-{insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 9'b000000000;
-initial begin
+    rst = 1;
+    {insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 10'b0000000000;
     #20;
     rst = 0;
-end
 
-// Case 4: Withdraw money with no balance
-// State Transition: welcomeScreen -> enterPassword -> optionScreen -> enterAmount -> checkBalance -> showNoBalance -> enterAmount
-// Expected state output: 0000 -> 0001 -> 0011 -> 0110 -> 0111 -> 1000 -> 0110
-initial begin
+    // Case 4: Withdraw money with no balance
+    // State Transition: welcomeScreen -> enterPassword -> optionScreen -> enterAmount -> checkBalance -> showNoBalance -> enterAmount
+    // Expected state output: 0000 -> 0001 -> 0011 -> 0110 -> 0111 -> 1000 -> 0110
+
     #50;
     insertCard = 1;
     #20;
@@ -151,19 +144,16 @@ initial begin
     enoughBalance = 0;
     #20;
     #20;
-end
 
-rst = 1;
-{insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 9'b000000000;
-initial begin
+    rst = 1;
+    {insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 10'b0000000000;
     #20;
     rst = 0;
-end
 
-// Case 5: Withdraw money with enough balance
-// State Transition: welcomeScreen -> enterPassword -> optionScreen -> enterAmount -> checkBalance -> giveMoney -> printReceipt -> optionScreen
-// Expected state output: 0000 -> 0001 -> 0011 -> 0110 -> 0111 -> 1001 -> 1010 -> 0011
-initial begin
+    // Case 5: Withdraw money with enough balance
+    // State Transition: welcomeScreen -> enterPassword -> optionScreen -> enterAmount -> checkBalance -> giveMoney -> printReceipt -> optionScreen
+    // Expected state output: 0000 -> 0001 -> 0011 -> 0110 -> 0111 -> 1001 -> 1010 -> 0011
+
     #50;
     insertCard = 1;
     #20;
@@ -185,11 +175,9 @@ initial begin
     moneyTaken = 0;
     #20;
     #20;
-end
 
-rst = 1;
-{insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 9'b000000000;
-initial begin
+    rst = 1;
+    {insertCard, cardRemoved, cancelAction, correctPassword, optionSelect, moneyInserted, amountEntered, enoughBalance, moneyTaken} = 10'b0000000000;
     #20;
     rst = 0;
 end

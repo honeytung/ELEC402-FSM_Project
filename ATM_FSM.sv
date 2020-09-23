@@ -13,7 +13,7 @@ module ATM_FSM(
     input logic cardRemoved,
     input logic cancelAction,
     input logic correctPassword,
-    input logic optionSelect,
+    input logic [1:0] optionSelect,
     input logic moneyInserted,
     input logic amountEntered,
     input logic enoughBalance,
@@ -107,7 +107,10 @@ always@(*) begin
 
     // optionScreen: option screen to deposite/withdrawal of money
     else if(currentState == optionScreen) begin
-        if(optionSelect == 1) begin
+        if(cancelAction == 1) begin
+            nextState <= removeCard;
+        end
+        else if(optionSelect == 1) begin
             nextState <= enterAmount;
         end
         else if(optionSelect == 2) begin
